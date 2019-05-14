@@ -1,0 +1,33 @@
+service: aws-nodejs # NOTE: update this with your service name
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-southeast-2
+  memorySize: 256
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - "arn:aws:s3:::*"
+
+functions:
+  resize:
+    handler: resize.handle
+    environment:
+      bucket: facpserverlessnodejsresizer
+    events:
+      - s3:
+          bucket: facpserverlessnodejsresizer
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+      - s3:
+          bucket: facpserverlessnodejsresizer
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .png
